@@ -1,0 +1,71 @@
+﻿@page "/update-profile/{HeroId:int}"
+@rendermode @(InteractiveWebAssembly)
+@inject NavigationManager NavigationManager
+@inject IHeroViewService HeroViewService
+
+<PageTitle>Update Profile</PageTitle>
+
+<div id="hero-profile">
+    <header class="major">
+        <h3>Update Form</h3>
+    </header>
+    <EditForm FormName="ProfileForm" Model="Hero" OnValidSubmit="SubmitForm" autocomplete="off">
+        <div class="row gtr-uniform">
+            <div class="col-12">
+                <InputText type="text" name="profilename" id="profilename" placeholder="Name" @bind-Value="Hero!.name" />
+            </div>
+            <div class="col-12">
+                <InputSelect name="profiletype" id="profiletype" @bind-Value="Hero!.type">
+                    <option value="">- Select -</option>
+                    @foreach (var ht in HeroTypes!)
+                    {
+                        <option value="@ht.id">@ht.name</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="col-12">
+                <InputTextArea name="profilestory" id="profilestory" rows="5" placeholder="Story" @bind-Value="Hero!.story"></InputTextArea>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn" name="submitprofile" id="submitprofile">Save</button>
+                <button type="reset" class="btn">Reset</button>
+            </div>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter]
+    public int HeroId { get; set; }
+    [SupplyParameterFromForm]
+    HeroModel Hero { get; set; } = new();
+
+    private IReadOnlyList<HeroTypeDTO>? HeroTypes { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        HeroTypes = await HeroViewService.GetHeroTypesAsync();
+        var find = await HeroViewService.GetHeroAsync(HeroId);
+        Hero = new HeroModel
+        {
+            id = find.id,
+            name = find.name,
+            type = find.type,
+            story = find.story,
+            datecreated = find.datecreated
+        };
+    }
+
+    async Task SubmitForm()
+    {
+        var res = await HeroViewService.UpdateHeroAsync(new HeroDTO
+        {
+            id = Hero.id,
+            name = Hero.name,
+            type = Hero.type,
+            story = Hero.story,
+            datecreated = DateTime.Now
+        });
+        NavigationManager.NavigateTo("/home", forceLoad: true);
+    }
+}

@@ -1,0 +1,34 @@
+﻿@inherits LayoutComponentBase
+
+<div id="main" style="padding:1em">
+
+    <div class="inner">
+
+        <section>
+
+            <header>
+                <h2 style="margin:0; text-transform: uppercase; cursor:pointer;" onclick="window.location = '/home'">Heroes in my Pocket: Profile</h2>
+            </header>
+
+            <hr class="major" style="margin:1em 0;" />
+
+            <div class="row gtr-uniform">
+
+                <br />
+
+                <div class="col-3">
+                    <Heroes />
+                </div>
+
+                <div class="col-9">
+                    @Body
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</div>
+

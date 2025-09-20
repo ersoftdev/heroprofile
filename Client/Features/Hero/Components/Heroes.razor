@@ -1,0 +1,38 @@
+﻿@page "/heroes"
+@rendermode @(InteractiveWebAssembly)
+@inject NavigationManager NavigationManager
+@inject IHeroViewService HeroViewService
+
+<div id="heroes">
+    <h4 class="cursor-pointer" style="text-transform:uppercase;" @onclick="() => NewProfile()">
+        + Create Hero Profile
+    </h4>
+    <hr  class="major" style="margin:0;"/>
+    <br />
+    @if (heroes is not null)
+    {
+        @foreach (var hr in heroes!)
+        {
+            <h4 class="cursor-pointer" @onclick="() => ViewProfile(hr.id)">
+                @hr.name.ToUpper()
+            </h4>
+        }
+    }
+</div>
+
+@code {
+    private IReadOnlyList<HeroDTO>? heroes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        heroes = await HeroViewService.GetHeroesAsync();
+        if (heroes is null)
+        {
+            heroes = [];
+        }
+    }
+    
+    void NewProfile() => NavigationManager.NavigateTo($"new-profile");
+
+    void ViewProfile(int id) => NavigationManager.NavigateTo($"hero-profile/{id}");
+}

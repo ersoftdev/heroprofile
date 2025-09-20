@@ -1,0 +1,52 @@
+﻿@page "/hero-profile/{HeroId:int}"
+@rendermode @(InteractiveWebAssembly)
+@inject NavigationManager NavigationManager
+@inject IHeroViewService HeroViewService
+
+<PageTitle>Hero Profile</PageTitle>
+
+<div id="hero-profile">
+    @if (!HeroFind)
+    {
+        <h4 class="error alert">Profile Hero not found!</h4>
+    }
+    else
+    {        
+        <header class="major">
+            <p style="font-size:1.5em">
+                @Hero?.name
+            </p>
+        </header>
+        <p>
+            Hero Type: @HeroTypeDesc
+        </p>
+        <p>
+            Back Story: <br />
+            @Hero?.story
+        </p>
+        <a href="/update-profile/@HeroId" class="button">Update</a>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int HeroId { get; set; }
+    private HeroDTO? Hero { get; set; }
+    private IReadOnlyList<HeroTypeDTO>? HeroTypes { get; set; } = [];
+    private bool HeroFind { get; set; } = false;
+    private string HeroTypeDesc { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Hero = await HeroViewService.GetHeroAsync(HeroId);
+        if (Hero is not null)
+        {
+            HeroFind = true;
+            HeroTypes = await HeroViewService.GetHeroTypesAsync();
+            if (HeroTypes is not null)
+            {
+                HeroTypeDesc = HeroTypes!.FirstOrDefault(d => d.id == Hero?.type).name;
+            }
+        }
+    }
+}
