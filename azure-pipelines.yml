@@ -54,6 +54,6 @@ steps:
 
 - task: AzureWebApp@1
   inputs:
-    azureSubscription: 'Azure subscription 1'
+    azureSubscription: 'ChronicleForgeConn'
     appName: 'heroprofile'
     package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
