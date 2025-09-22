@@ -1,9 +1,0 @@
-# .NET / Blazor
-bin/
-obj/
-*.user
-*.suo
-*.userosscache
-*.sln.docstates
-.vs/
-wwwroot/dist/
