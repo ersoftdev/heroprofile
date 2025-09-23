@@ -47,13 +47,12 @@ steps:
     arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
 
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
 
 - task: AzureWebApp@1
   inputs:
-    azureSubscription: 'ChronicleForgeConn'
-    appName: 'heroprofile'
+    azureSubscription: 'heroProfileConn'
+    appName: 'ersoftdevheroprofile'
     package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
