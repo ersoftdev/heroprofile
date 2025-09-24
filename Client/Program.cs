@@ -10,7 +10,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 //DI
 builder.Services.AddScoped<IHeroViewService, ClientHeroService>();
 
-Console.WriteLine("IHERO 1:" + typeof(IHeroViewService).Assembly.FullName);
-Console.WriteLine("IHERO 2:" + typeof(ClientHeroService).Assembly.FullName);
+//Console.WriteLine("IHERO 1:" + typeof(IHeroViewService).Assembly.FullName);
+//Console.WriteLine("IHERO 2:" + typeof(ClientHeroService).Assembly.FullName);
 
 await builder.Build().RunAsync();

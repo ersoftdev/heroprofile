@@ -11,7 +11,7 @@ public static class DependencyInjection
         {
             conf.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
         });
-        services.AddScoped<IHeroViewService, HeroViewService>();
+        services.AddScoped<IHeroViewService, NullHeroViewService>();
 
         return services;
     }

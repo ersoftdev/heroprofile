@@ -16,78 +16,33 @@ namespace Application.Tests.Hero;
 public class HeroViewServiceTests
 {
     [Fact]
-    public async Task GetHeroesAsync_Returns_List_Of_HeroDTO()
+    public async Task GetHeroesAsync_Returns_Null()
     {
-        //arrange
-        var expectations = new List<HeroDTO>
-        {
-            new HeroDTO
-            {
-                id = 1,
-                name = "Baron Sengir",
-                type = 3,
-                story = "Leader of the Sengire Vampire family",
-                datecreated = DateTime.Now
-            },
-            new HeroDTO
-            {
-                id = 1,
-                name = "Batman",
-                type = 1,
-                story = "Vigilante turn super hero",
-                datecreated = DateTime.Now
-            }
-        };
-
+        // Arrange
         var senderMock = new Mock<ISender>();
-
-        senderMock
-            .Setup(s => s.Send(It.IsAny<GetHeroQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Ok<IReadOnlyList<HeroDTO>>(expectations));
-
-        var service = new HeroViewService(senderMock.Object);
+        var service = new NullHeroViewService(senderMock.Object);
 
         // Act
         var heroes = await service.GetHeroesAsync();
 
         // Assert
-        heroes.Should().BeEquivalentTo(expectations);
-        senderMock.Verify(s => s.Send(It.IsAny<GetHeroQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+        Assert.Null(heroes);
     }
 
     [Fact]
-    public async Task CreateHeroAsync_Returns_New_Hero()
+    public async Task CreateHeroAsync_Should_Fail()
     {
-        //arrange
-        var input = new HeroDTO
-        {
-            name = "Baron Sengir",
-            type = 3,
-            story = "Leader of the Sengire Vampire family",
-            datecreated = DateTime.Now
-        };
-
-        var created = new HeroDTO
-        {
-            id = 1,
-            name = "Baron Sengir",
-            type = 3,
-            story = "Leader of the Sengire Vampire family",
-            datecreated = DateTime.Now
-        };
-
+        // Arrange
         var senderMock = new Mock<ISender>();
-        senderMock
-            .Setup(s => s.Send(It.IsAny<CreateHeroCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Ok(created));
+        var service = new NullHeroViewService(senderMock.Object);
 
-        var service = new HeroViewService(senderMock.Object);
+        var inputHero = new HeroDTO { name = "Test" };
 
-        // Act
-        var result = await service.CreateHeroAsync(input);
+        //Act
+        Result<HeroDTO> result = await service.CreateHeroAsync(inputHero);
 
         // Assert
-        result.story.Should().Be(input.story);
-        result.Should().BeEquivalentTo(created);
+        Assert.False(result.Success);                     // it should fail
+        Assert.Equal("Create Hero not implemented", result.Error);
     }
 }

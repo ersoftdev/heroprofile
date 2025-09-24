@@ -8,6 +8,6 @@ public interface IHeroViewService
     Task<IReadOnlyList<HeroTypeDTO>?> GetHeroTypesAsync();
     Task<HeroDTO> GetHeroAsync(int heroid);
     Task<HeroAttributesDTO> GetHeroAttributesAsync(int heroid);
-    Task<HeroDTO> CreateHeroAsync(HeroDTO hero);
-    Task<HeroDTO?> UpdateHeroAsync(HeroDTO hero);
+    Task<Result<HeroDTO>> CreateHeroAsync(HeroDTO hero);
+    Task<Result<HeroDTO>?> UpdateHeroAsync(HeroDTO hero);
 }

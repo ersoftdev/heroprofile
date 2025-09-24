@@ -14,6 +14,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<_Hero.Hero>()
+            .Property(h => h.datecreated)
+            .HasColumnType("timestamp without time zone")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
         modelBuilder.Entity<Heroattributes>(eb =>
         {
             eb.HasNoKey();

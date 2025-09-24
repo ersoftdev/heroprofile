@@ -16,48 +16,59 @@ public class HeroRepository(IDbContextFactory<ApplicationDbContext> contextFacto
     {
         await using var ctx = _contextFactory.CreateDbContext();
 
-        return await ctx.Heroes.AsNoTracking().ToListAsync();
+        return await ctx.Heroes.AsNoTracking().ToListAsync().ConfigureAwait(false);
     }
 
     public async Task<IReadOnlyList<_Hero.Herotype>?> GetHeroTypesAsync()
     {
-        return await _cache.GetOrCreateAsync("Herotype", async entry =>
+        var list = new List<_Hero.Herotype>
         {
-            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
-            await using var ctx = _contextFactory.CreateDbContext();
-            return await ctx.Herotype
-                           .AsNoTracking()
-                           .Select(h => new Herotype { id = h.id, name = h.name })
-                           .ToListAsync();
-        });
+            new Herotype{ id = 1, name = "Warrior"},
+            new Herotype{ id = 2, name = "Rogue"},
+            new Herotype{ id = 3, name = "Mage"},
+            new Herotype{ id = 4, name = "Archer"},
+        };
+        return await Task.FromResult(list);
+        //return await _cache.GetOrCreateAsync("Herotype", async entry =>
+        //{
+        //    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+        //    await using var ctx = _contextFactory.CreateDbContext();
+        //    return await ctx.Herotype
+        //                   .AsNoTracking()
+        //                   .Select(h => new Herotype { id = h.id, name = h.name })
+        //                   .ToListAsync()
+        //                   .ConfigureAwait(false);
+        //});
     }
 
     public async Task<_Hero.Hero?> GetHeroByIdAsync(int heroid)
     {
         await using var ctx = _contextFactory.CreateDbContext();
 
-        return await ctx.Heroes.FirstOrDefaultAsync(h => h.id == heroid);
+        var result = await ctx.Heroes.FirstOrDefaultAsync(h => h.id == heroid).ConfigureAwait(false);
+
+        return result;
     }
 
     public async Task<_Hero.Heroattributes?> GetHeroAttributesAsync(int heroid)
     {
         await using var ctx = _contextFactory.CreateDbContext();
 
-        return await ctx.Attributes.FirstOrDefaultAsync(h => h.heroid == heroid);
+        return await ctx.Attributes.FirstOrDefaultAsync(h => h.heroid == heroid).ConfigureAwait(false);
     }
 
     public async Task<_Hero.Hero> CreateHeroAsync(_Hero.Hero hero)
     {
         await using var ctx = _contextFactory.CreateDbContext();
         ctx.Heroes.Add(hero);
-        await ctx.SaveChangesAsync();
+        await ctx.SaveChangesAsync().ConfigureAwait(false);
         return hero;
     }
 
     public async Task<_Hero.Hero?> UpdateHeroAsync(_Hero.Hero hero)
     {
         await using var ctx = _contextFactory.CreateDbContext();
-        var update = await ctx.Heroes.FindAsync(hero.id);
+        var update = await ctx.Heroes.FindAsync(hero.id).ConfigureAwait(false);
         if (update is null)
         {
             return null;
@@ -65,7 +76,7 @@ public class HeroRepository(IDbContextFactory<ApplicationDbContext> contextFacto
         update.name = hero.name;
         update.type = hero.type;
         update.story = hero.story;
-        await ctx.SaveChangesAsync();
+        await ctx.SaveChangesAsync().ConfigureAwait(false);
         return update;
     }
 }

@@ -21,7 +21,7 @@ namespace Server.Features.Hero.Controllers
         [HttpGet("GetHeroes")]
         [ResponseCache(Duration = 3600)]
         public async Task<IReadOnlyList<HeroDTO>> GetHero()
-        {
+        {            
             var result = await _mediator.Send(new GetHeroQuery());  
             if (!result.Success)
             {

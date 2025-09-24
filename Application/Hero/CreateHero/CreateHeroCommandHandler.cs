@@ -13,8 +13,7 @@ public class CreateHeroCommandHandler(IHeroRepository heroRepository) : ICommand
         { 
             name = command.Name,
             type = command.Type,
-            story = command.Story,
-            datecreated = DateTime.Now
+            story = command.Story
         };
         var result = await _heroRepository.CreateHeroAsync(newHero);
         return new HeroDTO 

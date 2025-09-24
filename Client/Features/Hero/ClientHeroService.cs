@@ -1,4 +1,5 @@
 ﻿using Hero.Application.Hero;
+using Hero.Domain.Abstractions;
 using Hero.Shared.DTO.Hero;
 using System.Net.Http.Json;
 
@@ -22,7 +23,7 @@ public class ClientHeroService//(HttpClient http)
 
     public async Task<HeroAttributesDTO> GetHeroAttributesAsync(int heroid) => await _http.GetFromJsonAsync<HeroAttributesDTO>($"api/Hero/GetHeroAttributes/{heroid}");
 
-    public async Task<HeroDTO> CreateHeroAsync(HeroDTO hero)
+    public async Task<Result<HeroDTO>> CreateHeroAsync(HeroDTO hero)
     {
         var response = await _http.PostAsJsonAsync<HeroDTO>("api/Hero/CreateHero", hero);
 
@@ -30,7 +31,7 @@ public class ClientHeroService//(HttpClient http)
 
         return await response.Content.ReadFromJsonAsync<HeroDTO>();
     }
-    public async Task<HeroDTO?> UpdateHeroAsync(HeroDTO hero)
+    public async Task<Result<HeroDTO>?> UpdateHeroAsync(HeroDTO hero)
     {
         var result = await _http.PutAsJsonAsync<HeroDTO>($"api/Hero/UpdateHero/{hero.id}", hero);
 

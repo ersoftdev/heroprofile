@@ -14,8 +14,7 @@ public class UpdateHeroCommandHandler(IHeroRepository heroRepository) : ICommand
             id = command.Id,
             name = command.Name,
             type = command.Type,
-            story = command.Story,
-            datecreated = DateTime.Now
+            story = command.Story
         };
         var result = await _heroRepository.UpdateHeroAsync(updateHero);
         if (result is null)
