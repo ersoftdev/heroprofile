@@ -70,7 +70,13 @@ stages:
               appName: 'ersoftdevheroprofile'
               package: '$(Pipeline.Workspace)/drop/**/*.zip'
               appSettings: |
-                -name ASPNETCORE_ENVIRONMENT -value dev
+                [
+                  {
+                    "name": "ASPNETCORE_ENVIRONMENT",
+                    "value": "dev",
+                    "slotSetting": false
+                  }
+                ]
 
 # ---------- UAT Deploy ----------
 - stage: UAT
@@ -92,4 +98,10 @@ stages:
               appName: 'ersoftuatheroprofile'
               package: '$(Pipeline.Workspace)/drop/**/*.zip'
               appSettings: |
-                -name ASPNETCORE_ENVIRONMENT -value uat
+                [
+                  {
+                    "name": "ASPNETCORE_ENVIRONMENT",
+                    "value": "uat",
+                    "slotSetting": false
+                  }
+                ]
