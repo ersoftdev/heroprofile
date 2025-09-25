@@ -57,21 +57,32 @@ stages:
   dependsOn: Build
   jobs:
   - deployment: DevDeploy
-    environment: 'dev'      # Azure DevOps Environment name
+    environment: 'dev'
     pool:
       vmImage: 'ubuntu-latest'
     strategy:
       runOnce:
         deploy:
           steps:
+            # Deploy the app package
             - task: AzureWebApp@1
               displayName: 'Deploy to Dev Web App'
               inputs:
                 azureSubscription: 'heroProfileConn'
                 appName: 'ersoftdevheroprofile'
                 package: '$(Pipeline.Workspace)/drop/**/*.zip'
-                appSettings: |
-                  ASPNETCORE_ENVIRONMENT=dev
+
+            # Inline PowerShell to set ASPNETCORE_ENVIRONMENT=Development
+            - task: AzurePowerShell@5
+              displayName: 'Set Dev App Setting'
+              inputs:
+                azureSubscription: 'heroProfileConn'
+                ScriptType: 'InlineScript'
+                azurePowerShellVersion: 'LatestVersion'
+                Inline: |
+                  Set-AzWebApp -ResourceGroupName "YourResourceGroupName" `
+                               -Name "ersoftdevheroprofile" `
+                               -AppSettings @{"ASPNETCORE_ENVIRONMENT"="Development"}
 
 # ---------- UAT Deploy ----------
 - stage: UAT
@@ -87,11 +98,22 @@ stages:
       runOnce:
         deploy:
           steps:
+            # Deploy the app package
             - task: AzureWebApp@1
               displayName: 'Deploy to UAT Web App'
               inputs:
                 azureSubscription: 'heroProfileConn'
                 appName: 'ersoftuatheroprofile'
                 package: '$(Pipeline.Workspace)/drop/**/*.zip'
-                appSettings: |
-                  ASPNETCORE_ENVIRONMENT=uat
+
+            # Inline PowerShell to set ASPNETCORE_ENVIRONMENT=UAT
+            - task: AzurePowerShell@5
+              displayName: 'Set UAT App Setting'
+              inputs:
+                azureSubscription: 'heroProfileConn'
+                ScriptType: 'InlineScript'
+                azurePowerShellVersion: 'LatestVersion'
+                Inline: |
+                  Set-AzWebApp -ResourceGroupName "YourResourceGroupName" `
+                               -Name "ersoftuatheroprofile" `
+                               -AppSettings @{"ASPNETCORE_ENVIRONMENT"="UAT"}
