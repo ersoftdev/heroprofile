@@ -82,7 +82,7 @@ stages:
                 Inline: |
                   Set-AzWebApp -ResourceGroupName "YourResourceGroupName" `
                                -Name "ersoftdevheroprofile" `
-                               -AppSettings @{"ASPNETCORE_ENVIRONMENT"="Development"}
+                               -AppSettings @{"ASPNETCORE_ENVIRONMENT"="dev"}
 
 # ---------- UAT Deploy ----------
 - stage: UAT
@@ -116,4 +116,4 @@ stages:
                 Inline: |
                   Set-AzWebApp -ResourceGroupName "YourResourceGroupName" `
                                -Name "ersoftuatheroprofile" `
-                               -AppSettings @{"ASPNETCORE_ENVIRONMENT"="UAT"}
+                               -AppSettings @{"ASPNETCORE_ENVIRONMENT"="uat"}
