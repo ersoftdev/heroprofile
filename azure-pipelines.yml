@@ -64,25 +64,15 @@ stages:
       runOnce:
         deploy:
           steps:
-            # Deploy the app package
             - task: AzureWebApp@1
               displayName: 'Deploy to Dev Web App'
               inputs:
                 azureSubscription: 'heroProfileConn'
                 appName: 'ersoftdevheroprofile'
                 package: '$(Pipeline.Workspace)/drop/**/*.zip'
-
-            # Inline PowerShell to set ASPNETCORE_ENVIRONMENT=Development
-            - task: AzurePowerShell@5
-              displayName: 'Set Dev App Setting'
-              inputs:
-                azureSubscription: 'heroProfileConn'
-                ScriptType: 'InlineScript'
-                azurePowerShellVersion: 'LatestVersion'
-                Inline: |
-                  Set-AzWebApp -ResourceGroupName "YourResourceGroupName" `
-                               -Name "ersoftdevheroprofile" `
-                               -AppSettings @{"ASPNETCORE_ENVIRONMENT"="dev"}
+                # 👇 Key part: set app setting inline
+                appSettings: |
+                  -ASPNETCORE_ENVIRONMENT "dev"
 
 # ---------- UAT Deploy ----------
 - stage: UAT
@@ -98,22 +88,11 @@ stages:
       runOnce:
         deploy:
           steps:
-            # Deploy the app package
             - task: AzureWebApp@1
               displayName: 'Deploy to UAT Web App'
               inputs:
                 azureSubscription: 'heroProfileConn'
                 appName: 'ersoftuatheroprofile'
                 package: '$(Pipeline.Workspace)/drop/**/*.zip'
-
-            # Inline PowerShell to set ASPNETCORE_ENVIRONMENT=UAT
-            - task: AzurePowerShell@5
-              displayName: 'Set UAT App Setting'
-              inputs:
-                azureSubscription: 'heroProfileConn'
-                ScriptType: 'InlineScript'
-                azurePowerShellVersion: 'LatestVersion'
-                Inline: |
-                  Set-AzWebApp -ResourceGroupName "YourResourceGroupName" `
-                               -Name "ersoftuatheroprofile" `
-                               -AppSettings @{"ASPNETCORE_ENVIRONMENT"="uat"}
+                appSettings: |
+                  -ASPNETCORE_ENVIRONMENT "uat"
