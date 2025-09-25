@@ -1,7 +1,8 @@
 using Hero.Application;
 using Hero.Infra;
-using Hero.Infra.Repositories;
+using Hero.Shared.ViewModel;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Server;
@@ -18,6 +19,10 @@ builder.Services
 builder.Services.AddApplication();
 builder.Services.AddInfra(builder.Configuration);
 builder.Services.AddMemoryCache();
+
+builder.Services.AddSingleton(
+    builder.Configuration.GetSection("AppEnv").Get<AppEnv>()!
+);
 
 builder.Services.AddControllers();
 

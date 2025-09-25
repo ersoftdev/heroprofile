@@ -1,12 +1,19 @@
 ﻿@page "/"
 @page "/home"
-
+@rendermode @(InteractiveWebAssembly)
 @inject NavigationManager NavigationManager
+@inject AppEnv AppEnv
+
 <PageTitle>Home</PageTitle>
 
 <div>
     <p>
         Manage your Hero Profile.
+    </p>
+    <p>
+        "Application Environment": @AppEnv.Env 
+        <br />
+        "Application Message": @AppEnv.Msg
     </p>
 </div>
 
