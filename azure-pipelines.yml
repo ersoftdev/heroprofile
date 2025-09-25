@@ -3,56 +3,93 @@ trigger:
     include:
       - main
 
-pool:
-  vmImage: 'ubuntu-latest'
-
 variables:
   buildConfiguration: 'Release'
   dotnetVersion: '8.0.x'
 
-steps:
-- task: UseDotNet@2
-  inputs:
-    packageType: sdk
-    version: $(dotnetVersion)
+stages:
+# ---------- Build & Test ----------
+- stage: Build
+  displayName: 'Build & Test'
+  jobs:
+  - job: Build
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: UseDotNet@2
+      inputs:
+        packageType: sdk
+        version: $(dotnetVersion)
 
-- task: DotNetCoreCLI@2
-  displayName: 'Restore'
-  inputs:
-    command: restore
-    projects: '**/*.sln'
+    - task: DotNetCoreCLI@2
+      displayName: Restore
+      inputs:
+        command: restore
+        projects: '**/*.sln'
 
-- task: DotNetCoreCLI@2
-  displayName: 'Build'
-  inputs:
-    command: build
-    projects: '**/*.sln'
-    arguments: '--configuration $(buildConfiguration)'
+    - task: DotNetCoreCLI@2
+      displayName: Build
+      inputs:
+        command: build
+        projects: '**/*.sln'
+        arguments: '--configuration $(buildConfiguration)'
 
-# ✅ Add this test step
-- task: DotNetCoreCLI@2
-  displayName: 'Run Unit Tests'
-  inputs:
-    command: test
-    projects: '**/*Application.Tests.csproj'
-    arguments: '--configuration $(buildConfiguration) --no-build'
+    - task: DotNetCoreCLI@2
+      displayName: Test
+      inputs:
+        command: test
+        projects: '**/*Application.Tests.csproj'
+        arguments: '--configuration $(buildConfiguration) --no-build'
 
-# If tests fail, pipeline stops here—no publish, no deploy
+    - task: DotNetCoreCLI@2
+      displayName: Publish
+      inputs:
+        command: publish
+        projects: 'Server/Server.csproj'
+        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
 
-- task: DotNetCoreCLI@2
-  displayName: 'Publish'
-  inputs:
-    command: publish
-    projects: 'Server/Server.csproj'
-    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    - publish: $(Build.ArtifactStagingDirectory)
+      artifact: drop
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
+# ---------- Dev Deploy ----------
+- stage: Dev
+  displayName: 'Deploy to Dev'
+  dependsOn: Build
+  jobs:
+  - deployment: DevDeploy
+    environment: 'dev'              # Azure DevOps Environment name
+    pool:
+      vmImage: 'ubuntu-latest'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: 'heroProfileConn'
+              appName: 'ersoftdevheroprofile'
+              package: '$(Pipeline.Workspace)/drop/**/*.zip'
+              appSettings: |
+                -name ASPNETCORE_ENVIRONMENT -value DEV
 
-- task: AzureWebApp@1
-  inputs:
-    azureSubscription: 'heroProfileConn'
-    appName: 'ersoftdevheroprofile'
-    package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
+# ---------- UAT Deploy ----------
+- stage: UAT
+  displayName: 'Deploy to UAT'
+  dependsOn: Dev
+  condition: succeeded()
+  jobs:
+  - deployment: UATDeploy
+    environment: 'uat'
+    pool:
+      vmImage: 'ubuntu-latest'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: 'heroProfileConn'
+              appName: 'ersoftuatheroprofile'
+              package: '$(Pipeline.Workspace)/drop/**/*.zip'
+              appSettings: |
+                -name ASPNETCORE_ENVIRONMENT -value UAT
