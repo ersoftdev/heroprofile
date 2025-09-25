@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Server;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,8 @@ builder.Services.AddSingleton(
 );
 
 builder.Services.AddControllers();
+
+Console.WriteLine($"ASP.NET Core Environment: {builder.Environment.EnvironmentName}");
 
 var app = builder.Build();
 
